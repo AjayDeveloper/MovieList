@@ -42,10 +42,10 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Movie{" +
-                "search=" + search +
-                ", totalResults='" + totalResults + '\'' +
-                ", response='" + response + '\'' +
+        return "{" +
+                "Search:" + search +
+                ", totalResults:'" + totalResults + '\'' +
+                ", Response:'" + response + '\'' +
                 '}';
     }
 }

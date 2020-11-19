@@ -3,8 +3,6 @@ package com.exmple.movielist.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class Search {
 
     @SerializedName("Title")
@@ -65,12 +63,12 @@ public class Search {
 
     @Override
     public String toString() {
-        return "Search{" +
-                "title='" + title + '\'' +
-                ", year='" + year + '\'' +
-                ", imdbID='" + imdbID + '\'' +
-                ", type='" + type + '\'' +
-                ", poster='" + poster + '\'' +
+        return "{" +
+                "Title:'" + title + '\'' +
+                ", Year:'" + year + '\'' +
+                ", imdbID:'" + imdbID + '\'' +
+                ", Type:'" + type + '\'' +
+                ", Poster:'" + poster + '\'' +
                 '}';
     }
 }

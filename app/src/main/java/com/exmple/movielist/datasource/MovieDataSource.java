@@ -1,9 +1,6 @@
 package com.exmple.movielist.datasource;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
@@ -22,8 +19,6 @@ public class MovieDataSource extends PageKeyedDataSource<String, Search> {
     private static final String FIRST_PAGE = "batman";
     public static final int apiKey = 75906267;
     private static final String TAG = "test";
-    Activity activity;
-    private Context context = activity.getApplicationContext();
 
 
     @Override
@@ -32,22 +27,25 @@ public class MovieDataSource extends PageKeyedDataSource<String, Search> {
 
         ApiClient.getInstance()
                 .getApi()
-                .getSearch("batman", apiKey)
+                .getSearch(FIRST_PAGE, apiKey)
                 .enqueue(new Callback<Movie>() {
                     @Override
                     public void onResponse(Call<Movie> call, Response<Movie> response) {
 
                         if (response.body() != null) {
-                            Log.d(TAG, "onResponse: " + response.body().getSearch().toString());
+                            Log.d(TAG, "onResponseOkGoogle: " + response.body());
+                            for(int i =0 ;i<response.body().getSearch().size();i++){
+                                callback.onResult(response.body().getSearch(), null, response.body().getSearch().get(i).getTitle());
+                            }
 
-                            callback.onResult(response.body().getSearch(), null, "batman");
+
 
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Movie> call, Throwable t) {
-                        Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        //      Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -56,24 +54,28 @@ public class MovieDataSource extends PageKeyedDataSource<String, Search> {
 
     @Override
     public void loadBefore(@NonNull LoadParams<String> params, @NonNull LoadCallback<String, Search> callback) {
-
+        Log.d(TAG, "loadBefore: "+params.key);
         ApiClient.getInstance().getApi().getSearch(params.key, apiKey).enqueue(new Callback<Movie>() {
+
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
+                Log.d(TAG, "loadBefore: "+params.key);
 
-                String key = response.body().getSearch().get(0).getTitle() ;
+                    String key = response.body().getSearch().get(0).getTitle();
+                    if (response.body() != null) {
+                        Log.d(TAG, "onResponseOkMoogle: " + response.body());
+                        callback.onResult(response.body().getSearch(), key);
+                    }
 
-                if (response.body() != null) {
-                    callback.onResult(response.body().getSearch(), key);
+
                 }
 
 
-            }
 
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
-                Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
-
+                // Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onFailure: "+t.getMessage());
             }
         });
 
@@ -89,16 +91,21 @@ public class MovieDataSource extends PageKeyedDataSource<String, Search> {
                 .enqueue(new Callback<Movie>() {
                     @Override
                     public void onResponse(Call<Movie> call, Response<Movie> response) {
-                        String key = response.body().getSearch().get(0).getTitle();
-                        if (response.body() != null) {
-                            callback.onResult(response.body().getSearch(), key);
+                        for (int i = 0; i < response.body().getSearch().size(); i++) {
+                            String key = response.body().getSearch().get(i).getTitle();
+
+                            if (response.body() != null) {
+                                Log.d(TAG, "onResponseOkSoogle: " + response.body());
+                                callback.onResult(response.body().getSearch(), key);
+                            }
                         }
+
                     }
 
                     @Override
                     public void onFailure(Call<Movie> call, Throwable t) {
 
-                        Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        //   Toast.makeText(activity, "Error while retriving the data" + t.getMessage(), Toast.LENGTH_SHORT).show();
 
                     }
                 });

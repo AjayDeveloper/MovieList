@@ -12,7 +12,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -44,7 +44,6 @@ dependencies {
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
    // Pagging
     def paging_version = "2.1.2"
@@ -56,6 +55,9 @@ dependencies {
      //ViewModel arch
     def viewmodel_version = "2.3.0-beta01"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$viewmodel_version"
+
+    //multidex
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

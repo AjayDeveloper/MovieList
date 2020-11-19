@@ -6,28 +6,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.exmple.movielist.adapter.MovieAdapter;
-import com.exmple.movielist.api.Api;
-import com.exmple.movielist.model.Movie;
 import com.exmple.movielist.model.Search;
-import com.exmple.movielist.util.ApiClient;
+import com.exmple.movielist.viewmodel.SearchViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MovieAdapter recyclerAdapter;
-    List<Search> searchList;
+    private List<Search> searchList;
+    public static final String TAG = "test";
 
 
     @Override
@@ -39,29 +36,40 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerAdapter = new MovieAdapter(getApplicationContext(), searchList);
+        recyclerView.setHasFixedSize(true);
+
+        SearchViewModel searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        recyclerAdapter = new MovieAdapter(this, searchList);
+        searchViewModel.searchPageList.observe(this, new Observer<PagedList<Search>>() {
+            @Override
+            public void onChanged(PagedList<Search> searches) {
+                Log.d(TAG, "onChanged: "+searches.toString());
+
+                recyclerAdapter.submitList(searches);
+
+            }
+        });
+
         recyclerView.setAdapter(recyclerAdapter);
 
 
-        Api apiService = ApiClient.getClient().create(Api.class);
-        Call<Movie> call = apiService.getSearch("batman", 75906267);
-        call.enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
-                if (response.isSuccessful()) {
-                    Log.d("test", "onResponse: " + response.body().getSearch());
-                    searchList.addAll(response.body().getSearch());
-                    recyclerAdapter.setMovieList(searchList);
+      /*  ApiClient.getInstance().getApi().getSearch("Batman", 75906267)
+                .enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(Call<Movie> call, Response<Movie> response) {
+                        if (response.isSuccessful()) {
+                            Log.d("test", "onResponse: " + response.body().getSearch());
+                            searchList.addAll(response.body().getSearch());
+                            recyclerAdapter.setMovieList(searchList);
 
-                }
+                        }
+                    }
 
-            }
-
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-                Log.d("TAG", "Response = " + t.toString());
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Movie> call, Throwable t) {
+                        Log.d("TAG", "Response = " + t.toString());
+                    }
+                });*/
 
 
     }
